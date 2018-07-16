@@ -202,6 +202,11 @@ public:
 @property (nonatomic) GLKView *glView;
 @property (nonatomic) UIImageView *glSnapshotView;
 
+/// Graphics performance monitoring.
+@property (nonatomic) CFTimeInterval startTime;
+@property (nonatomic) NSInteger frameCount;
+@property (nonatomic) CFTimeInterval frameDurations;
+
 @property (nonatomic) NSMutableArray<NSLayoutConstraint *> *scaleBarConstraints;
 @property (nonatomic, readwrite) MGLScaleBar *scaleBar;
 @property (nonatomic, readwrite) UIImageView *compassView;

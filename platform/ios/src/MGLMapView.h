@@ -1612,6 +1612,10 @@ MGL_EXPORT IB_DESIGNABLE
  */
 @property (nonatomic) MGLMapDebugMaskOptions debugMask;
 
+@property (nonatomic, readonly) CFTimeInterval frameTime;
+@property (nonatomic, readonly) CFTimeInterval averageFrameTime;
+@property (nonatomic, readonly) CGFloat averageFrameRate;
+
 @property (nonatomic, getter=isDebugActive) BOOL debugActive __attribute__((unavailable("Use -debugMask and -setDebugMask:.")));
 
 - (void)toggleDebug __attribute__((unavailable("Use -setDebugMask:.")));
