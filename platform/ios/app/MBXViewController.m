@@ -8,6 +8,8 @@
 #import "LimeGreenStyleLayer.h"
 #import "MBXEmbeddedMapViewController.h"
 
+#import "MBXFrameTimeGraphView.h"
+
 #import <Mapbox/Mapbox.h>
 #import "../src/MGLMapView_Experimental.h"
 
@@ -200,6 +202,10 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 @property (nonatomic) BOOL mapInfoHUDEnabled;
 @property (nonatomic) BOOL shouldLimitCameraChanges;
 @property (nonatomic) BOOL randomWalk;
+
+
+@property (nonatomic) MBXFrameTimeGraphView *frameTimeGraphView;
+
 @end
 
 @interface MGLMapView (MBXViewController)
@@ -282,6 +288,9 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         }
     }
     [self.mapView addGestureRecognizer:singleTap];
+
+    self.frameTimeGraphView = [[MBXFrameTimeGraphView alloc] initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 200)];
+    [self.view addSubview:self.frameTimeGraphView];
 }
 
 - (void)saveState:(__unused NSNotification *)notification
@@ -2279,6 +2288,10 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     }
 
     return features;
+}
+
+- (void)mapViewDidFinishRenderingFrame:(MGLMapView *)mapView fullyRendered:(BOOL)fullyRendered {
+    [self.frameTimeGraphView updatePathWithFrameDuration:mapView.frameTime];
 }
 
 @end
