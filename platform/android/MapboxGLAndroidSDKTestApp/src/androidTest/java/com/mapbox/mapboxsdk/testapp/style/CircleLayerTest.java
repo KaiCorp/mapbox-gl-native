@@ -9,6 +9,8 @@ import timber.log.Timber;
 
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.CircleLayer;
+import com.mapbox.mapboxsdk.style.types.Formatted;
+import com.mapbox.mapboxsdk.style.types.FormattedSection;
 import com.mapbox.mapboxsdk.testapp.activity.BaseActivityTest;
 
 import org.junit.Test;
@@ -161,7 +163,6 @@ public class CircleLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testCircleColorTransition() {
     validateTestSetup();
@@ -205,7 +206,6 @@ public class CircleLayerTest extends BaseActivityTest {
       assertEquals(layer.getCircleColor().getExpression(), expression);
     });
   }
-
 
   @Test
   public void testCircleColorAsIntConstant() {
@@ -265,7 +265,6 @@ public class CircleLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testCircleOpacityTransition() {
     validateTestSetup();
@@ -309,7 +308,6 @@ public class CircleLayerTest extends BaseActivityTest {
       assertEquals(layer.getCircleOpacity().getExpression(), expression);
     });
   }
-
 
   @Test
   public void testCircleTranslateTransition() {
@@ -426,7 +424,6 @@ public class CircleLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testCircleStrokeColorTransition() {
     validateTestSetup();
@@ -470,7 +467,6 @@ public class CircleLayerTest extends BaseActivityTest {
       assertEquals(layer.getCircleStrokeColor().getExpression(), expression);
     });
   }
-
 
   @Test
   public void testCircleStrokeColorAsIntConstant() {
@@ -529,5 +525,4 @@ public class CircleLayerTest extends BaseActivityTest {
       assertEquals(layer.getCircleStrokeOpacity().getExpression(), expression);
     });
   }
-
 }

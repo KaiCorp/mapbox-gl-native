@@ -9,6 +9,8 @@ import timber.log.Timber;
 
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.HillshadeLayer;
+import com.mapbox.mapboxsdk.style.types.Formatted;
+import com.mapbox.mapboxsdk.style.types.FormattedSection;
 import com.mapbox.mapboxsdk.testapp.activity.BaseActivityTest;
 
 import org.junit.Test;

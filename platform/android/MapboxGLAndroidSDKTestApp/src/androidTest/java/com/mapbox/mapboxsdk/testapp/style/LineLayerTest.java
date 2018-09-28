@@ -9,6 +9,8 @@ import timber.log.Timber;
 
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
+import com.mapbox.mapboxsdk.style.types.Formatted;
+import com.mapbox.mapboxsdk.style.types.FormattedSection;
 import com.mapbox.mapboxsdk.testapp.activity.BaseActivityTest;
 
 import org.junit.Test;
@@ -160,7 +162,6 @@ public class LineLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testLineMiterLimitAsConstant() {
     validateTestSetup();
@@ -233,7 +234,6 @@ public class LineLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testLineColorTransition() {
     validateTestSetup();
@@ -277,7 +277,6 @@ public class LineLayerTest extends BaseActivityTest {
       assertEquals(layer.getLineColor().getExpression(), expression);
     });
   }
-
 
   @Test
   public void testLineColorAsIntConstant() {
@@ -380,7 +379,6 @@ public class LineLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testLineGapWidthTransition() {
     validateTestSetup();
@@ -424,7 +422,6 @@ public class LineLayerTest extends BaseActivityTest {
       assertEquals(layer.getLineGapWidth().getExpression(), expression);
     });
   }
-
 
   @Test
   public void testLineOffsetTransition() {
@@ -499,7 +496,6 @@ public class LineLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testLineDasharrayTransition() {
     validateTestSetup();
@@ -572,5 +568,4 @@ public class LineLayerTest extends BaseActivityTest {
       assertEquals(layer.getLinePattern().getExpression(), expression);
     });
   }
-
 }

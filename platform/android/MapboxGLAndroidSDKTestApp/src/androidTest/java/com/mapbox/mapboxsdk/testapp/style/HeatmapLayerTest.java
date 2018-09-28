@@ -9,6 +9,8 @@ import timber.log.Timber;
 
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.HeatmapLayer;
+import com.mapbox.mapboxsdk.style.types.Formatted;
+import com.mapbox.mapboxsdk.style.types.FormattedSection;
 import com.mapbox.mapboxsdk.testapp.activity.BaseActivityTest;
 
 import org.junit.Test;
@@ -161,7 +163,6 @@ public class HeatmapLayerTest extends BaseActivityTest {
     });
   }
 
-
   @Test
   public void testHeatmapWeightAsConstant() {
     validateTestSetup();
@@ -190,7 +191,6 @@ public class HeatmapLayerTest extends BaseActivityTest {
       assertEquals(layer.getHeatmapWeight().getExpression(), expression);
     });
   }
-
 
   @Test
   public void testHeatmapIntensityTransition() {
