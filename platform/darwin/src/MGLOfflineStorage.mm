@@ -3,10 +3,13 @@
 #import "MGLFoundation_Private.h"
 #import "MGLAccountManager_Private.h"
 #import "MGLGeometry_Private.h"
+#import "MGLMapboxEvents.h"
 #import "MGLNetworkConfiguration.h"
 #import "MGLOfflinePack_Private.h"
 #import "MGLOfflineRegion_Private.h"
 #import "MGLTilePyramidOfflineRegion.h"
+#import "MGLShapeOfflineRegion.h"
+#import "MMEConstants.h"
 #import "NSBundle+MGLAdditions.h"
 #import "NSValue+MGLAdditions.h"
 
@@ -357,6 +360,31 @@ const MGLExceptionName MGLUnsupportedRegionTypeException = @"MGLUnsupportedRegio
         [[strongSelf mutableArrayValueForKey:@"packs"] addObject:pack];
         if (completion) {
             completion(pack, error);
+            
+            MGLTilePyramidOfflineRegion *tileRegion = MGL_OBJC_DYNAMIC_CAST(region, MGLTilePyramidOfflineRegion);
+            MGLShapeOfflineRegion *shapeRegion = MGL_OBJC_DYNAMIC_CAST(region, MGLShapeOfflineRegion);
+            
+            NSDictionary *attributes;
+            
+            if ([region isKindOfClass:[MGLTilePyramidOfflineRegion class]]) {
+                attributes = @{
+                  @"event": MMEventTypeOfflineDownloadStart,
+                  @"shapeForOfflineRegion": @"tileregion",
+                  @"minZoom": [NSNumber numberWithDouble:tileRegion.minimumZoomLevel],
+                  @"maxZoom": [NSNumber numberWithDouble:tileRegion.maximumZoomLevel],
+                  @"styleURL": region.styleURL
+                  };
+            } else {
+                attributes = @{
+                   @"event": MMEventTypeOfflineDownloadStart,
+                   @"shapeForOfflineRegion": @"shaperegion",
+                   @"minZoom": [NSNumber numberWithDouble:shapeRegion.minimumZoomLevel],
+                   @"maxZoom": [NSNumber numberWithDouble:shapeRegion.maximumZoomLevel],
+                   @"styleURL": region.styleURL
+                   };
+            }
+            
+            [MGLMapboxEvents pushEvent:MMEventTypeOfflineDownloadStart withAttributes:attributes];
         }
     }];
 }
