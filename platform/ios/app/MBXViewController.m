@@ -194,6 +194,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 
 @property (nonatomic) IBOutlet MGLMapView *mapView;
 @property (weak, nonatomic) IBOutlet UIButton *hudLabel;
+@property (weak, nonatomic) IBOutlet MBXFrameTimeGraphView *frameTimeGraphView;
 @property (nonatomic) NSInteger styleIndex;
 @property (nonatomic) BOOL debugLoggingEnabled;
 @property (nonatomic) BOOL customUserLocationAnnnotationEnabled;
@@ -202,9 +203,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 @property (nonatomic) BOOL mapInfoHUDEnabled;
 @property (nonatomic) BOOL shouldLimitCameraChanges;
 @property (nonatomic) BOOL randomWalk;
-
-
-@property (nonatomic) MBXFrameTimeGraphView *frameTimeGraphView;
 
 @end
 
@@ -289,8 +287,8 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     }
     [self.mapView addGestureRecognizer:singleTap];
 
-    self.frameTimeGraphView = [[MBXFrameTimeGraphView alloc] initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 200)];
-    [self.view addSubview:self.frameTimeGraphView];
+//    self.frameTimeGraphView = [[MBXFrameTimeGraphView alloc] initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 200)];
+//    [self.view addSubview:self.frameTimeGraphView];
 }
 
 - (void)saveState:(__unused NSNotification *)notification

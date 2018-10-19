@@ -1,58 +1,57 @@
 #import "MBXFrameTimeGraphView.h"
 
-const CGFloat exaggeration = 1000.f;
+const CGFloat EXAGGERATION = 4.f * 1000.f;
+const CGFloat WIDTH = 4.f;
 
 @interface MBXFrameTimeGraphView ()
 
 @property (nonatomic) CAScrollLayer *scrollLayer;
-@property (nonatomic) CAShapeLayer *shapeLayer;
-@property (nonatomic) UIBezierPath *path;
 @property (nonatomic) CAShapeLayer *thresholdLayer;
+@property (nonatomic) CGFloat currentX;
+//@property (nonatomic) NSMutableArray *barLayers;
 
 @end
 
 @implementation MBXFrameTimeGraphView
 
+- (instancetype)init {
+    if (self = [super init]) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (void)commonInit {
+    self.userInteractionEnabled = NO;
+    self.layer.borderColor = [UIColor grayColor].CGColor;
+    self.layer.borderWidth = 1;
+    self.layer.opacity = 0.9f;
+
+    self.scrollLayer = [CAScrollLayer layer];
+    self.scrollLayer.scrollMode = kCAScrollHorizontally;
+    self.scrollLayer.masksToBounds = YES;
+    [self.layer addSublayer:self.scrollLayer];
+
+    self.thresholdLayer = [CAShapeLayer layer];
+    self.thresholdLayer.fillColor = [UIColor darkGrayColor].CGColor;
+    [self.layer addSublayer:self.thresholdLayer];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
 
-    self.userInteractionEnabled = NO;
-
-    self.layer.borderColor = [UIColor blueColor].CGColor;
-    self.layer.borderWidth = 1;
-
-    if (!self.scrollLayer) {
-        self.scrollLayer = [CAScrollLayer layer];
+    if (!CGRectEqualToRect(self.scrollLayer.frame, self.bounds)) {
         self.scrollLayer.frame = self.bounds;
-        self.scrollLayer.scrollMode = kCAScrollHorizontally;
-        self.scrollLayer.masksToBounds = YES;
-        [self.layer addSublayer:self.scrollLayer];
-    }
 
-    if (!self.shapeLayer) {
-        self.shapeLayer = [CAShapeLayer layer];
-        self.shapeLayer.frame = self.scrollLayer.frame;
-        self.shapeLayer.strokeColor = [UIColor blueColor].CGColor;
-        self.shapeLayer.fillColor = nil;
-        self.shapeLayer.lineJoin = kCALineJoinRound;
-        //self.shapeLayer.masksToBounds = YES;
-        [self.scrollLayer addSublayer:self.shapeLayer];
-    }
-
-    if (!self.path) {
-        self.path = [UIBezierPath bezierPath];
-        [self.path moveToPoint:CGPointMake(0, self.scrollLayer.frame.size.height)];
-    }
-
-    if (!self.thresholdLayer) {
-        // Threshold line at target render duration
-        CGRect thresholdLineRect = CGRectMake(0, self.frame.size.height - [self renderDurationTargetMilliseconds], self.frame.size.width, 2);
-        UIBezierPath *thresholdPath = [UIBezierPath bezierPathWithRect:thresholdLineRect];
-        self.thresholdLayer = [CAShapeLayer layer];
-        self.thresholdLayer.path = thresholdPath.CGPath;
-        self.thresholdLayer.fillColor = [UIColor greenColor].CGColor;
-
-        [self.layer addSublayer:self.thresholdLayer];
+        CGRect thresholdLineRect = CGRectMake(0, self.frame.size.height - [self renderDurationTargetMilliseconds], self.frame.size.width, 1);
+        self.thresholdLayer.path = CGPathCreateWithRect(thresholdLineRect, nil);
     }
 }
 
@@ -60,21 +59,28 @@ const CGFloat exaggeration = 1000.f;
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
 
-    CGPoint newPoint = CGPointMake(self.path.currentPoint.x + 1.0, self.frame.size.height - fminf(frameDuration * exaggeration, self.frame.size.height));
+    self.currentX += WIDTH;
 
-    [self.path addLineToPoint:newPoint];
+    CAShapeLayer *bar = [self barWithFrameDuration:frameDuration];
+    bar.position = CGPointMake(self.currentX, self.frame.size.height);
 
-    //NSLog(@"New line at %@", NSStringFromCGPoint(newPoint));
+    [self.scrollLayer addSublayer:bar];
+    //[self.barLayers addObject:bar];
 
-    self.shapeLayer.path = self.path.CGPath;
+    // TODO: remove stale bars from the scrolllayer.
 
-    [self.scrollLayer scrollToPoint:CGPointMake(self.path.currentPoint.x + 1.0 - self.frame.size.width, 0)];
+//    if (self.barLayers.count > (self.frame.size.width / WIDTH * 5)) {
+//        [self.barLayers removeObjectsInRange:NSMakeRange(0, self.frame.size.width / WIDTH * 4)];
+//        NSLog(@"Removed %.f bars from array", self.frame.size.width / WIDTH * 4);
+//    }
+
+    [self.scrollLayer scrollToPoint:CGPointMake(self.currentX - self.frame.size.width, 0)];
 
     [CATransaction commit];
 }
 
 - (CGFloat)renderDurationTargetMilliseconds {
-    CGFloat target = (1.0 / UIScreen.mainScreen.maximumFramesPerSecond) * exaggeration;
+    CGFloat target = (1.0 / UIScreen.mainScreen.maximumFramesPerSecond) * EXAGGERATION;
     return [self roundedFloat:target];
 }
 
@@ -85,6 +91,33 @@ const CGFloat exaggeration = 1000.f;
     CGFloat scaleFactor = [NSScreen mainScreen].backingScaleFactor;
 #endif
     return round(f * scaleFactor) / scaleFactor;
+}
+
+- (CAShapeLayer *)barWithFrameDuration:(CFTimeInterval)frameDuration {
+    CAShapeLayer *bar = [CAShapeLayer layer];
+
+    CGRect barRect = CGRectMake(0, 0, WIDTH, -(fminf(frameDuration * EXAGGERATION, self.frame.size.height)));
+    UIBezierPath *barPath = [UIBezierPath bezierPathWithRect:barRect];
+    bar.path = barPath.CGPath;
+    bar.fillColor = [self colorForFrameDuration:frameDuration].CGColor;
+
+    return bar;
+}
+
+- (UIColor *)colorForFrameDuration:(CFTimeInterval)frameDuration {
+    CGFloat renderDurationTargetMilliseconds = [self renderDurationTargetMilliseconds];
+    frameDuration *= EXAGGERATION;
+
+    if (frameDuration < renderDurationTargetMilliseconds && frameDuration > (renderDurationTargetMilliseconds * 0.75)) {
+        // Warning: orange
+        return [UIColor colorWithRed:(CGFloat)(255.f/255.f) green:(CGFloat)(154.f/255.f) blue:(CGFloat)(82.f/255.f) alpha:1.f];
+    } else if (frameDuration > renderDurationTargetMilliseconds) {
+        // Danger: red
+        return [UIColor colorWithRed:(CGFloat)(255.f/255.f) green:(CGFloat)(91.f/255.f) blue:(CGFloat)(86.f/255.f) alpha:1.f];
+    } else {
+        // OK: green
+        return [UIColor colorWithRed:(CGFloat)(0.f/255.f) green:(CGFloat)(190.f/255.f) blue:(CGFloat)(123.f/255.f) alpha:1.f];
+    }
 }
 
 @end
